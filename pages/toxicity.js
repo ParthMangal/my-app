@@ -65,7 +65,7 @@ export default function Toxicity({ userData }) {
     e.preventDefault();
     setMessage('');
     setResults(null);
-    setDownloadLinks([]);
+    // setDownloadLinks([]);
 
     if (!userData.email && !email) {
       setMessage('Please update your email before running predictions.');
