@@ -9,5 +9,5 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/categories/:path*', '/jobs/:path*', '/results/:path*', '/profile/:path*'],
+  matcher: ['/dashboard/:path*', '/categories/:path*', '/jobs/:path*', '/results/:path*', '/profile/:path*', '/toxicity/:path*'],
 };

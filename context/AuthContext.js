@@ -1,70 +1,69 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  const fetchUser = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/user', {
+        credentials: 'include',
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setUser(data);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/user', {
-      credentials: 'include',
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.username) {
-          setUser(data);
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    fetchUser();
   }, []);
 
   const login = async (username, password) => {
-    const res = await fetch('http://localhost:5000/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-      credentials: 'include',
-    });
-    const data = await res.json();
-    if (res.ok && data.message === 'Login successful') {
-      const userRes = await fetch('http://localhost:5000/api/user', {
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
         credentials: 'include',
       });
-      const userData = await userRes.json();
-      if (userRes.ok) {
-        setUser(userData);
-        return true;
+      const data = await response.json();
+      if (response.ok) {
+        await fetchUser();
+        return { success: true, message: data.message };
       }
+      return { success: false, message: data.error || 'Login failed' };
+    } catch (error) {
+      return { success: false, message: 'Network error during login' };
     }
-    return false;
-  };
-
-  const register = async (username, password) => {
-    const res = await fetch('http://localhost:5000/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-      credentials: 'include',
-    });
-    const data = await res.json();
-    if (res.ok && data.message === 'User registered successfully') {
-      return true;
-    }
-    return data.error || 'Registration failed';
   };
 
   const logout = async () => {
-    await fetch('http://localhost:5000/api/logout', {
-      method: 'POST',
-      credentials: 'include',
-    });
-    setUser(null);
+    try {
+      await fetch('http://localhost:5000/api/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      setUser(null);
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, fetchUser }}>
       {children}
     </AuthContext.Provider>
   );

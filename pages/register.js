@@ -1,21 +1,33 @@
-import { useAuth } from '../context/AuthContext';
-import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 export default function Register() {
-  const { register } = useAuth();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
   const router = useRouter();
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const username = e.target.username.value;
-    const password = e.target.password.value;
-    const result = await register(username, password);
-    if (result === true) {
-      router.push('/login');
-    } else {
-      setError(result);
+    setMessage('');
+    try {
+      const response = await fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, email }),
+        credentials: 'include',
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setMessage('Registration successful! Redirecting to login...');
+        setTimeout(() => router.push('/login'), 1000);
+      } else {
+        setMessage(data.error || 'Registration failed.');
+      }
+    } catch (error) {
+      setMessage('Error registering: Network issue.');
     }
   };
 
@@ -24,28 +36,46 @@ export default function Register() {
       <h1>Register</h1>
       <form onSubmit={handleSubmit}>
         <div>
+          <label>Username:</label>
           <input
             type="text"
-            name="username"
-            placeholder="Username"
-            style={{ width: '100%', padding: '8px', margin: '8px 0' }}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            style={{ width: '100%', padding: '8px', margin: '10px 0' }}
+            required
           />
         </div>
         <div>
+          <label>Password:</label>
           <input
             type="password"
-            name="password"
-            placeholder="Password"
-            style={{ width: '100%', padding: '8px', margin: '8px 0' }}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ width: '100%', padding: '8px', margin: '10px 0' }}
+            required
           />
         </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ width: '100%', padding: '8px', margin: '10px 0' }}
+            required
+          />
+        </div>
         <button type="submit" style={{ padding: '10px 20px' }}>
           Register
         </button>
       </form>
+      {message && (
+        <p style={{ color: message.includes('successful') ? 'green' : 'red' }}>
+          {message}
+        </p>
+      )}
       <p>
-        Already have an account? <a href="/login">Login</a>
+        Already have an account? <Link href="/login">Login</Link>
       </p>
     </div>
   );

@@ -1,50 +1,30 @@
-import { useAuth } from '../context/AuthContext';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await logout();
-    router.push('/login');
-  };
-
-  if (!user) return null;
 
   return (
-    <nav style={{
-      background: '#0070f3',
-      padding: '10px',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      color: 'white'
-    }}>
-      <div>
-        <Link href="/dashboard" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>
-          Dashboard
-        </Link>
-        <Link href="/categories" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>
-          Categories
-        </Link>
-        <Link href="/jobs" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>
-          Jobs
-        </Link>
-        <Link href="/results" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>
-          Results
-        </Link>
-        <Link href="/profile" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>
-          Profile
-        </Link>
-      </div>
-      <button
-        onClick={handleLogout}
-        style={{ background: 'white', color: '#0070f3', padding: '5px 10px', border: 'none', borderRadius: '4px' }}
-      >
-        Logout
-      </button>
+    <nav style={{ padding: '10px', background: '#f0f0f0' }}>
+      <ul style={{ listStyle: 'none', display: 'flex', gap: '20px' }}>
+        <li><Link href="/">Home</Link></li>
+        <li><Link href="/dashboard">Dashboard</Link></li>
+        {user && (
+          <>
+            <li><Link href="/categories">Categories</Link></li>
+            <li><Link href="/jobs">Jobs</Link></li>
+            <li><Link href="/results">Results</Link></li>
+            <li><Link href="/profile">Profile</Link></li>
+            <li><Link href="/toxicity">Toxicity</Link></li>
+            <li>
+              <button onClick={logout} style={{ padding: '5px 10px' }}>
+                Logout
+              </button>
+            </li>
+          </>
+        )}
+        {!user && <li><Link href="/login">Login</Link></li>}
+      </ul>
     </nav>
   );
 }
