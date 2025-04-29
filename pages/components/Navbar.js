@@ -35,6 +35,9 @@ export default function Navbar() {
         <Link href="/results" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>
           Results
         </Link>
+        <Link href="/profile" style={{ color: 'white', marginRight: '20px', textDecoration: 'none' }}>
+          Profile
+        </Link>
       </div>
       <button
         onClick={handleLogout}

@@ -1,7 +1,6 @@
 import { useAuth } from '../context/AuthContext';
-import Link from 'next/link';
 
-export default function Dashboard({ userData }) {
+export default function Profile({ userData }) {
   const { user, logout } = useAuth();
 
   if (!user) {
@@ -10,34 +9,12 @@ export default function Dashboard({ userData }) {
 
   return (
     <div style={{ maxWidth: '600px', margin: '50px auto', textAlign: 'center' }}>
-      <h1>Welcome, {userData.username}</h1>
-      <h3>Your Tools</h3>
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        <li style={{ margin: '10px 0' }}>
-          <Link href="/categories" style={{ textDecoration: 'none', color: '#0070f3' }}>
-            Categories Tool
-          </Link>
-        </li>
-        <li style={{ margin: '10px 0' }}>
-          <Link href="/jobs" style={{ textDecoration: 'none', color: '#0070f3' }}>
-            Jobs Tool
-          </Link>
-        </li>
-        <li style={{ margin: '10px 0' }}>
-          <Link href="/results" style={{ textDecoration: 'none', color: '#0070f3' }}>
-            Results Tool
-          </Link>
-        </li>
-        <li style={{ margin: '10px 0' }}>
-          <Link href="/profile" style={{ textDecoration: 'none', color: '#0070f3' }}>
-            Profile Tool
-          </Link>
-        </li>
-      </ul>
-      <h3>Overview</h3>
-      <p>Categories: {userData.categories.length}</p>
-      <p>Jobs: {userData.jobs.length}</p>
-      <p>Results: {userData.results.length}</p>
+      <h1>Profile Tool</h1>
+      <h3>User Information</h3>
+      <p><strong>Username:</strong> {userData.username}</p>
+      <p><strong>Categories Count:</strong> {userData.categories.length}</p>
+      <p><strong>Jobs Count:</strong> {userData.jobs.length}</p>
+      <p><strong>Results Count:</strong> {userData.results.length}</p>
       <button
         onClick={logout}
         style={{ padding: '10px 20px', marginTop: '20px' }}
